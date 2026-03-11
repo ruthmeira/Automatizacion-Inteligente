@@ -88,7 +88,7 @@ Accedemos a la consola de administración a través del navegador en `http://loc
 Para que pgAdmin pueda comunicarse con el contenedor de PostgreSQL dentro de la red virtual `hito3_net`, debemos registrar el servidor siguiendo estos pasos técnicos:
 
 1.  Hacemos clic derecho en **Servers** > **Register** > **Server...**
-2.  En la pestaña **General**, asignamos el nombre identificativo: `Hito3_Server`.
+2.  En la pestaña **General**, asignamos el nombre identificativo: `Servidor-Hito3`.
 3.  En la pestaña **Connection**, introducimos los parámetros de red interna del stack:
     * **Host name/address:** `postgres` *(Nombre del servicio definido en el Docker Compose)*.
     * **Port:** `5432`.
