@@ -1,0 +1,31 @@
+GUÍA TÉCNICA: ARQUITECTURA DE MICROSERVICIOS Y ORQUESTACIÓN CON DOCKER
+
+1. EVOLUCIÓN DE LAS ARQUITECTURAS DE SOFTWARE
+Históricamente, las aplicaciones se desarrollaban bajo un modelo monolítico, donde todos los componentes (interfaz, lógica de negocio y acceso a datos) residían en una única unidad ejecutable. Aunque este modelo es sencillo de desplegar inicialmente, presenta graves problemas de escalabilidad y mantenimiento a medida que la aplicación crece. Ante esta problemática, surgió la arquitectura de microservicios.
+
+2. ¿QUÉ SON LOS MICROSERVICIOS?
+Una arquitectura de microservicios consiste en dividir una aplicación en un conjunto de servicios pequeños e independientes. Cada servicio ejecuta un proceso único y se comunica con los demás a través de mecanismos ligeros, generalmente una API de tipo HTTP/REST o colas de mensajes. En nuestro Hito 3, servicios como n8n, PostgreSQL y Qdrant actúan como piezas de este ecosistema, cada uno con una responsabilidad única y aislada.
+
+3. EL ROL FUNDAMENTAL DE DOCKER
+Docker ha revolucionado esta arquitectura mediante la contenedorización. Un contenedor es una unidad estándar de software que empaqueta el código y todas sus dependencias para que la aplicación se ejecute de forma fiable en cualquier entorno informático.
+A diferencia de las máquinas virtuales tradicionales, los contenedores no incluyen una copia completa del sistema operativo. En su lugar, comparten el kernel del host, lo que permite:
+- Un arranque casi instantáneo.
+- Una reducción drástica en el consumo de memoria RAM y CPU.
+- Una densidad mucho mayor de servicios por cada servidor físico.
+
+4. ORQUESTACIÓN CON DOCKER COMPOSE
+Cuando trabajamos con múltiples microservicios, gestionarlos uno a uno mediante comandos 'docker run' se vuelve inviable. Aquí es donde entra Docker Compose. Esta herramienta permite definir toda la infraestructura en un archivo YAML.
+En nuestro proyecto, el archivo docker-compose.yml define:
+- Redes (Networks): La red 'hito3_net' permite que n8n encuentre a 'postgres' por su nombre de servicio en lugar de usar IPs.
+- Volúmenes (Volumes): Garantizan que, aunque el contenedor se detenga, los datos de Qdrant y PostgreSQL permanezcan intactos en el disco local.
+
+5. INTELIGENCIA ARTIFICIAL Y BASES DE DATOS VECTORIALES
+En el contexto de la IA moderna, las bases de datos relacionales como PostgreSQL no son eficientes para buscar similitudes semánticas. Por ello, utilizamos Qdrant. Qdrant almacena "embeddings", que son representaciones matemáticas del texto generadas por modelos como nomic-embed-text.
+El proceso RAG (Retrieval-Augmented Generation) que hemos implementado sigue estos pasos:
+1. Fragmentación: El texto se divide en trozos pequeños para no exceder la ventana de contexto de Llama3.
+2. Indexación: Cada trozo se convierte en un vector y se guarda en Qdrant.
+3. Recuperación: Cuando el usuario pregunta, el sistema busca los vectores más cercanos.
+4. Generación: El modelo LLM recibe la pregunta junto con los trozos recuperados para dar una respuesta veraz y fundamentada.
+
+6. CONCLUSIÓN TÉCNICA
+La combinación de n8n como orquestador de flujos, Docker como gestor de infraestructura y modelos de lenguaje locales mediante Ollama, representa la vanguardia del desarrollo agéntico actual. Este sistema permite crear soluciones inteligentes, privadas y altamente escalables.

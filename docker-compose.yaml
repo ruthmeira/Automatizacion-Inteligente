@@ -14,6 +14,7 @@ services:
       - N8N_VERSION_NOTIFICATIONS_ENABLED=false
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./documentos:/home/node/.n8n-files
     networks:
       - hito3_net
 
