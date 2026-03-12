@@ -114,6 +114,88 @@
       ],
       "id": "d1ff3e1d-7b92-4988-b270-5fe73c452c6a",
       "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "documentos",
+          "mode": "list",
+          "cachedResultName": "documentos"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "num_chunks": "={{ $json.data.length }}",
+            "nombre": "={{ $('Read/Write Files from Disk').item.binary.data.fileName }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "num_chunks",
+              "displayName": "num_chunks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        976,
+        0
+      ],
+      "id": "01289a1e-089d-422a-a7ab-352d89ef3544",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "caOQHJiq7WfnQuPX",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -178,6 +260,17 @@
         [
           {
             "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
             "type": "main",
             "index": 0
           }
