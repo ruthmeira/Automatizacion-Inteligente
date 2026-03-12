@@ -53,10 +53,10 @@ Usamos **-d** para que los servicios sigan corriendo mientras seguimos trabajand
 
 Una vez levantado el servicio, el contenedor de **Ollama** está activo pero **carece de modelos**. Procedemos a descargar los modelos requeridos mediante comandos de ejecución remota en el contenedor.
 
-- **Llama3**: Lo utilizaremos para el **análisis de intención** y la **generación de respuestas**.
+- **Mistral**: Lo utilizaremos para el **análisis de intención** y la **generación de respuestas**.
 
 ```bash
-docker exec -it ollama_hito3 ollama pull llama3
+docker exec -it ollama_hito3 ollama pull mistral
 ```
 
 - **Nomic-Embed-Text**: Fundamental para el **Proyecto A**, ya que se encarga de **transformar el texto en vectores de 768 dimensiones**.
@@ -164,6 +164,70 @@ Como ultimo paso de la configuración previa al desarrollo de los proyectos, com
 
 ![Dashboard de Qdrant](/img/qdrant_dashboard.png)
 
-## 🚀 III. Desarrollo del Proyecto A: Sistema RAG Educativo
+## 🚀 III. Desarrollo del Proyecto A: Sistema RAG Educativo (Fase 1 - Ingesta)
 
+El objetivo de esta fase es procesar un archivo de texto, fragmentarlo y almacenarlo en una arquitectura de persistencia híbrida: vectorial (**Qdrant**) para la búsqueda semántica y relacional (**PostgreSQL**) para la auditoría. 
 
+### Paso 1: Disparador y Lectura de Archivos
+#### Nodo: Manual Trigger
+Este nodo actúa como el punto de inicio del flujo. Al ser un disparador manual, nos permite controlar cuándo se ejecuta el proceso de ingesta, lo que es ideal para pruebas y desarrollo iterativo.
+
+#### Nodo: Read File from Disk
+Este nodo se encarga de leer el contenido del archivo de texto que queremos procesar. Para ello, hemos montado un volumen local en el contenedor de n8n que apunta a la carpeta `./documentos:/home/node/.n8n-files` en nuestro sistema host. Esto nos permite colocar cualquier archivo de texto en esa carpeta y que n8n pueda acceder a él sin problemas.
+
+En file selector del nodo, seleccionamos la ruta del archivo dentro del contenedor, por ejemplo: `/home/node/.n8n-files/almacen.pdf`. Este nodo leerá el contenido completo del archivo y lo pasará al siguiente nodo para su procesamiento. 
+
+![Configuración del Nodo Read File](/img/read_file.png)
+
+### Paso 2: IA y Vectorización
+Añadimos el nodo **Qdrant Vector Store** para procesar la información. En este paso, es fundamental seleccionar las **credenciales de Qdrant que creamos anteriormente** en la sección de configuración inicial.
+
+#### Configuración del Nodo Qdrant Vector Store
+- **Operation:** `Insert Documents` (Operación para insertar nuevos documentos en la base vectorial).
+- **Collection Name:** `documentos_hito3` (Nombre de la colección donde se almacenarán los vectores).
+
+![Configuración del Nodo Qdrant](/img/qdrant_nodo.png)
+
+#### Configuración de SubNodos para Vectorización
+- **Embeddings Ollama:** Conectado al puerto Embedding. Seleccionamos la credencial de Ollama que creamos antes y elegimos el modelo `nomic-embed-text` para generar los vectores a partir del texto del documento.
+
+![Configuración del SubNodo de Embeddings](/img/embedding_nodo.png)
+
+- **Default Document Loader:** Conectado al puerto Document. 
+   - **Type of Data:** `Binary` (para procesar el contenido del archivo leído en formato binario).
+   - **Mode:** `Load All Input Data` (para cargar todo el contenido del archivo de una sola vez, lo que es adecuado para documentos de tamaño moderado).
+   - **Data Format:** `Automatically Detect by Mime Type` (para que el sistema determine el formato del documento de forma inteligente).
+   - **Text Splitting:** `Custom` (para permitir la configuración personalizada del splitter que fragmentará el texto en partes manejables).
+
+![Configuración del SubNodo Document Loader](/img/document_loader.png)
+
+- **Recursive Character Text Splitter:** Conectado a la base del Loader. Configuramos el `chunk size` a 500 y el `chunk overlap` a 50 para fragmentar el texto en partes manejables, lo que mejora la calidad de los vectores generados y la posterior búsqueda semántica.
+
+![Configuración del SubNodo Text Splitter](/img/text_splitter.png)
+
+### Paso 3: Consolidación y Registro en PostgreSQL
+Para evitar que se inserten múltiples filas por un solo un archivo, implementamos una lógica de consolidación de datos.
+
+#### Nodo: Aggregate
+Este nodo recibe los fragmentos generados por el splitter y los agrupa en un único paquete de salida. Esto asegura que el siguiente paso solo se ejecute una vez.
+-**Aggregate:** Seleccionamos `All Item Data` para consolidar toda la información en un solo bloque.
+
+![Configuración del Nodo Aggregate](/img/aggregate_nodo.png)
+
+#### Nodo: PostgreSQL (Insert Rows)
+Seleccionamos la credencial de PostgreSQL que creamos en la configuración inicial y configuramos el nodo para insertar una nueva fila en la tabla `documentos` por cada archivo procesado. En este nodo, mapeamos los campos de la tabla con los datos correspondientes:
+- **nombre:** Extraemos el nombre del archivo utilizando la función `{{ $('Read/Write Files from Disk').item.binary.data.fileName }}`.
+- **num_chunks:** Recuperamos el conteo de los fragmentos originales antes de ser agrupados con esta expresión `{{ $json.data.length }}`.
+
+![Configuración del Nodo PostgreSQL](/img/postgresql_nodo.png)
+
+### Paso 4: Ejecución y Verificación
+Al ejecutar el flujo, el sistema procesa el archivo de texto, genera los vectores correspondientes y los almacena en Qdrant, mientras que en PostgreSQL se registra una nueva fila con los metadatos del documento. Para verificar que todo ha funcionado correctamente, podemos consultar la tabla `documentos` en pgAdmin y revisar la colección `documentos_hito3` en el dashboard de Qdrant.
+
+![Verificación en pgAdmin](/img/pgadmin_verificacion.png)
+![Verificación en Qdrant](/img/qdrant_verificacion.png)
+
+### Vista General del Flujo de Ingesta
+A continuación se muestra una vista general de todos los nodos descritos anteriormente.
+
+![Vista General del Flujo de Ingesta](/img/flujo_general.png)
