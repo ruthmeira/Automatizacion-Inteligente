@@ -1,0 +1,55 @@
+{
+  "name": "RAG_INGESTION",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa7b366f-75df-46db-aab0-83221bca69bb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/.n8n-files/almacen.pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "12d20267-5640-4c7a-b2eb-2885110c5421",
+      "name": "Read/Write Files from Disk"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "cc507a0d-17d0-40e8-b082-7e5d8d2e0e15",
+  "meta": {
+    "instanceId": "5d54a3eaa7e6110246fa0c32e26184c8cf31447b5b36c05837ab66906b457f53"
+  },
+  "id": "fF4wujdv4iXf_IacHngle",
+  "tags": []
+}
