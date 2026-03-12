@@ -22,7 +22,7 @@ En nuestro proyecto, el archivo docker-compose.yml define:
 5. INTELIGENCIA ARTIFICIAL Y BASES DE DATOS VECTORIALES
 En el contexto de la IA moderna, las bases de datos relacionales como PostgreSQL no son eficientes para buscar similitudes semánticas. Por ello, utilizamos Qdrant. Qdrant almacena "embeddings", que son representaciones matemáticas del texto generadas por modelos como nomic-embed-text.
 El proceso RAG (Retrieval-Augmented Generation) que hemos implementado sigue estos pasos:
-1. Fragmentación: El texto se divide en trozos pequeños para no exceder la ventana de contexto de Llama3.
+1. Fragmentación: El texto se divide en trozos pequeños para no exceder la ventana de contexto de Mistral.
 2. Indexación: Cada trozo se convierte en un vector y se guarda en Qdrant.
 3. Recuperación: Cuando el usuario pregunta, el sistema busca los vectores más cercanos.
 4. Generación: El modelo LLM recibe la pregunta junto con los trozos recuperados para dar una respuesta veraz y fundamentada.
