@@ -100,6 +100,20 @@
       ],
       "id": "722bdc39-1948-4cad-ba2f-a0ff26191f7e",
       "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "d1ff3e1d-7b92-4988-b270-5fe73c452c6a",
+      "name": "Aggregate"
     }
   ],
   "pinData": {},
@@ -154,6 +168,17 @@
           {
             "node": "Default Data Loader",
             "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
             "index": 0
           }
         ]
