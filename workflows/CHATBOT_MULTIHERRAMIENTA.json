@@ -142,6 +142,94 @@
     },
     {
       "parameters": {
+        "url": "=https://api.open-meteo.com/v1/forecast?latitude={{ $json.results[0].latitude }}&longitude={{ $json.results[0].longitude }}&current_weather=true",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1008,
+        -16
+      ],
+      "id": "f2a5bd55-df68-44d0-8ce7-f9c934e2b03d",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e863918-e164-47e5-9a5c-50942f4368df",
+              "name": "output",
+              "value": "Lo siento, no he podido identificar tu intención o no tengo información sobre este tema en mis APIs configuradas.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        288
+      ],
+      "id": "36827d28-89a5-4e32-af8a-c8afba8e9537",
+      "name": "nada"
+    },
+    {
+      "parameters": {
+        "url": "=https://restcountries.com/v3.1/name/{{ $json.text.split('|')[1] }}?fullText=true",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        784,
+        144
+      ],
+      "id": "3033eb7d-a687-4394-a1e9-ec20bd805337",
+      "name": "paises"
+    },
+    {
+      "parameters": {
+        "url": "=https://geocoding-api.open-meteo.com/v1/search?name={{ encodeURIComponent($json.text.split('|')[1].trim()) }}&count=1&language=es",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        800,
+        -16
+      ],
+      "id": "6de827d7-5929-4ab9-8925-a95962fbafb2",
+      "name": "clima"
+    },
+    {
+      "parameters": {
+        "url": "=https://es.wikipedia.org/api/rest_v1/page/summary/{{ $json.text.split('|')[1] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "ruthfaouzimeira@gmail,com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        784,
+        -160
+      ],
+      "id": "42be97e1-1c66-4a44-a937-b0b4bd673da6",
+      "name": "wiki"
+    },
+    {
+      "parameters": {
         "hasOutputParser": true,
         "messages": {
           "messageValues": [
@@ -188,9 +276,64 @@
     },
     "Switch": {
       "main": [
-        [],
-        [],
-        [],
+        [
+          {
+            "node": "wiki",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "clima",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "paises",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "nada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        []
+      ]
+    },
+    "nada": {
+      "main": [
+        []
+      ]
+    },
+    "paises": {
+      "main": [
+        []
+      ]
+    },
+    "clima": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wiki": {
+      "main": [
         []
       ]
     },
