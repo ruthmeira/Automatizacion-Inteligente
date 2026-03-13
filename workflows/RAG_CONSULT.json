@@ -1,0 +1,98 @@
+{
+  "name": "RAG_CONSULT",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "10df4c78-2295-4f2e-8916-dab0e6b1bbda",
+      "name": "When chat message received",
+      "webhookId": "fdf83d9b-757f-41fc-a533-c4c21c12caaa"
+    },
+    {
+      "parameters": {
+        "model": "mistral:latest",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "c1763f4c-d871-45ee-b9df-d355cc7946c5",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "2lW6MU8TmI8NwPCF",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemPromptTemplate": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.7,
+      "position": [
+        240,
+        0
+      ],
+      "id": "39274517-88a3-4567-928d-6c4d5774955d",
+      "name": "Question and Answer Chain"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question and Answer Chain": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "45f6c8d1-8ba2-4112-beb0-fec72b72ae8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5d54a3eaa7e6110246fa0c32e26184c8cf31447b5b36c05837ab66906b457f53"
+  },
+  "id": "ERJF4NAK7OV5Q-_8ttvVK",
+  "tags": []
+}
