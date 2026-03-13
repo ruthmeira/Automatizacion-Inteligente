@@ -1,0 +1,102 @@
+{
+  "name": "CHATBOT_MULTIHERRAMIENTA",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f24f89d8-1c82-4fdb-aa32-17c46d4595ab",
+      "name": "When chat message received",
+      "webhookId": "9ead61f6-e7cf-4013-86b5-9f43bb4acbd0"
+    },
+    {
+      "parameters": {
+        "model": "mistral:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "b6b62c84-7b9e-462f-ba3f-6c7eb5934983",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "2lW6MU8TmI8NwPCF",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Eres un micro-servicio de clasificación de texto. Tu respuesta es la entrada de un algoritmo que fallará si añades una sola palabra extra.\n\nFormato OBLIGATORIO de salida: CATEGORIA|BUSQUEDA\nCATEGORIAS permitidas: WIKI, CLIMA, PAIS, NADA.\nEn BUSQUEDA: Pon la entidad principal SIN paréntesis, SIN explicaciones y SIN descripción de lo que haces.\n\nPRIORIDAD DE CATEGORIZACIÓN:\nSi preguntan por fechas, descubrimientos, personas, historia o 'qué es/quién fue' -> WIKI|Nombre (siempre en español)\nEjemplo: '¿Cuándo se descubrió América?' -> WIKI|Descubrimiento de America\n'¿Quién pintó la Mona Lisa?' -> WIKI|Leonardo Da Vinci\nSi preguntan por 'qué tiempo hace', 'clima' o 'temperatura' -> CLIMA|Ciudad\nEjemplo: 'Clima en Madrid' -> CLIMA|Madrid\nSi preguntan por 'capital', 'población' o 'país' -> PAIS|Pais en inglés\nEjemplo: 'Capital de España' -> PAIS|Spain\nSi saludan o hacen charlas triviales -> NADA/Nada\nEjemplo: 'Que como hoy' -> NADA|Nada\n\nREGLA ANTI-ALUCINACIÓN y PROHIBICIONES:\nNO clasifiques como CLIMA nada que no pida explícitamente el tiempo atmosférico.\nNO clasifiques como PAIS nada que no pida datos demográficos/políticos.\nPROHIBIDO poner explicaciones como '(population)' o '(capital)', osea nada entre ().\nPROHIBIDO responder con frases. Solo CATEGORIA|BUSQUEDA."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c0a24ebc-6b01-48d0-9f72-a2350aae897a",
+      "name": "Basic LLM Chain"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "9c856119-85f5-4b9d-9d10-9b650bb8a532",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5d54a3eaa7e6110246fa0c32e26184c8cf31447b5b36c05837ab66906b457f53"
+  },
+  "id": "tb7XsnlL1UpNKsp7B1Ghb",
+  "tags": []
+}
