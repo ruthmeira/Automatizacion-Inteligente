@@ -156,6 +156,141 @@
     },
     {
       "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Eres un asistente experto en interpretación de datos de APIs. Tu objetivo es convertir datos técnicos en una respuesta natural y educativa para el usuario.\n\nCONFIGURACIÓN DE RESPUESTA:\nResponde siempre en Español.\nSé breve y directo.\nUtiliza ÚNICAMENTE los datos proporcionados. No inventes información ni des más informacion de la que se pide.\n\nGUÍA DE INTERPRETACIÓN (Solo para Clima):\nSi recibes un 'weathercode', tradúcelo según esta tabla:\n\n0: Cielo despejado ☀️\n1, 2, 3: Parcialmente nublado ⛅\n45, 48: Niebla 🌫️\n51, 53, 55: Llovizna 🌦️\n61, 63, 65: Lluvia 🌧️\n71, 73, 75: Nieve ❄️\n95, 96, 99: Tormenta ⚡\nCONTEXTO ACTUAL:\nPREGUNTA DEL USUARIO: {{ $('When chat message received').item.json.chatInput }}\nDATOS CRUDOS DE LA HERRAMIENTA: {{ JSON.stringify($json) }}\nInstrucción final: Basándote en el código de clima anterior (si existe) y en los datos crudos, redacta la respuesta final para el usuario."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1216,
+        -16
+      ],
+      "id": "b727fb06-79bd-4c8e-b253-4c88a68efa7d",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "mistral:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        256
+      ],
+      "id": "f9050dfa-8e44-46d2-be63-d0554f21e9f5",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "2lW6MU8TmI8NwPCF",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "historial_conversaciones",
+          "mode": "list",
+          "cachedResultName": "historial_conversaciones"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pregunta": "={{ $('When chat message received').item.json.chatInput }}",
+            "respuesta": "={{ $json.text || $json.output }}",
+            "herramienta_usada": "={{ $('Basic LLM Chain').item.json.text.split('|')[0] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pregunta",
+              "displayName": "pregunta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "respuesta",
+              "displayName": "respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "herramienta_usada",
+              "displayName": "herramienta_usada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1568,
+        -16
+      ],
+      "id": "0de054c6-f787-4724-aba0-bdc83a729c74",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "caOQHJiq7WfnQuPX",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -227,6 +362,29 @@
       ],
       "id": "42be97e1-1c66-4a44-a937-b0b4bd673da6",
       "name": "wiki"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2588f74b-deab-4192-b9c4-38ac9ab9a1e7",
+              "name": "output",
+              "value": "={{ $json.respuesta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        -16
+      ],
+      "id": "0cdf7e85-7f6d-435d-a281-0fe01c143255",
+      "name": "Edit Fields"
     },
     {
       "parameters": {
@@ -308,17 +466,57 @@
     },
     "HTTP Request2": {
       "main": [
-        []
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "nada": {
       "main": [
-        []
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "paises": {
       "main": [
-        []
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "clima": {
@@ -334,7 +532,24 @@
     },
     "wiki": {
       "main": [
-        []
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Basic LLM Chain": {
