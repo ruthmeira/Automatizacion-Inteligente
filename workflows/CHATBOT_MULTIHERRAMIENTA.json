@@ -37,6 +37,111 @@
     },
     {
       "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.text.split('|')[0] }}",
+                    "rightValue": "WIKI",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "b7137a7f-c588-4769-9f6c-142f059b7679"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f7f665e9-a83d-4a16-b547-2b6d2ce2998c",
+                    "leftValue": "={{ $json.text.split('|')[0] }}",
+                    "rightValue": "CLIMA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e4f0c72e-fc73-4222-98d3-9fdb4e105286",
+                    "leftValue": "={{ $json.text.split('|')[0] }}",
+                    "rightValue": "PAIS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "263f7851-b711-4227-ad23-1f73a368e95d",
+                    "leftValue": "={{ $json.text.split('|')[0] }}",
+                    "rightValue": "NADA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "ffa174f1-891b-41ac-bd8b-4109fd842ac9",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
         "hasOutputParser": true,
         "messages": {
           "messageValues": [
@@ -81,9 +186,23 @@
         ]
       ]
     },
+    "Switch": {
+      "main": [
+        [],
+        [],
+        [],
+        []
+      ]
+    },
     "Basic LLM Chain": {
       "main": [
-        []
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
