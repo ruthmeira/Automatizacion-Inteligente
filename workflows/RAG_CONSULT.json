@@ -84,7 +84,7 @@
     {
       "parameters": {
         "options": {
-          "systemPromptTemplate": ""
+          "systemPromptTemplate": "PROHIBICIÓN ESTRICTA: NO UTILICES TU CONOCIMIENTO GENERAL.\n\nResponde ÚNICAMENTE basándote en los fragmentos de texto del {context}.\n\nREGLAS DE ORO:\n1. Si la respuesta no está en el contexto, responde EXACTAMENTE: \"Lo siento, este tema no está tratado en los documentos del curso.\"\n2. Tienes terminantemente PROHIBIDO decir \"sin embargo\", \"aunque\" o proporcionar respuestas basadas en tu propia memoria (como capitales, cultura o hechos generales).\n3. Si el contexto no contiene la información, NO respondas a la pregunta bajo ninguna circunstancia.\n\n----------------\nCONTEXTO DEL CURSO:\n{context}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
@@ -106,6 +106,29 @@
       ],
       "id": "74311615-d0a9-4d8d-8871-029690aac586",
       "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f8aa547d-47f3-4d73-ae2e-33034188385c",
+              "name": "output",
+              "value": "={{ $json.response }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        0
+      ],
+      "id": "7a344f72-bd60-4e30-a819-99982b9c5516",
+      "name": "Edit Fields"
     }
   ],
   "pinData": {},
@@ -167,7 +190,13 @@
     },
     "Question and Answer Chain": {
       "main": [
-        []
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
